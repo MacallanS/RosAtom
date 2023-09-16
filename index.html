@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>РК 2</title>
+</head>
+<body>
+    <header class="header">
+
+    </header>
+    <main>
+        <section id="section3" class="affairs">
+          <div class="affairs__wrapper">
+            <ul class="affairs__active">
+              <li>
+                <span class="affairs__counter disable" id="affairs__counter"></span>
+                <label>
+                  <input type="text" id="input" />
+                  <button id="add-btn">Add</button>
+                </label>
+              </li>
+              <li>
+                <button class="affairs__btn affairs__btn--del-first">Remove the first element of a list</button>
+              </li>
+              <li>
+                <button class="affairs__btn affairs__btn--del-last">Remove the last element of a list</button>
+              </li>
+              <li>
+                <input class="affairs__checkbox affairs__checkbox--even" aria-label="album slider" type="checkbox">
+                <span class="visually-hidden">checkbox for even elements</span>
+                <p class="affairs__text">Select even element</p>
+                <input class="affairs__checkbox affairs__checkbox--odd" aria-label="album slider" type="checkbox">
+                <span class="visually-hidden">checkbox for odd elements</span>
+                <p class="affairs__text">Select odd element</p>
+              </li>
+              
+            </ul>
+            <ul class="affairs__listComplite" id="completed_list"></ul>
+            <ul class="affairs__list" id="list"></ul>
+          </div>
+        </section>
+    </main>
+    <footer class="footer">
+    </footer>
+    <script src="./js/main.js"></script>
+</body>
+</html>
