@@ -73,7 +73,7 @@ function addAffair(text) {
   });
 
   const doneBtn = document.createElement("button");
-  doneBtn.innerText = "Did";
+  doneBtn.innerText = "Complete";
   doneBtn.classList.add("button__completed");
 
   doneBtn.addEventListener("click", () => {
