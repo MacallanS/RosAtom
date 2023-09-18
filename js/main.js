@@ -7,13 +7,33 @@ const checkboxOdd = document.querySelector('.affairs__checkbox--odd');
 const deleteFirstElement = document.querySelector('.affairs__btn--del-first');
 const deleteLastElement = document.querySelector('.affairs__btn--del-last');
 const completedList = document.getElementById("completed_list");
+const clearAllBtn = document.getElementById("clear-all-btn");
 
 let affairs = [];
 let completedAffairs = [];
 
+function loadFromLocalStorage() {
+  const storedAffairs = JSON.parse(localStorage.getItem('affairs')) || [];
+  const storedCompletedAffairs = JSON.parse(localStorage.getItem('completedAffairs')) || [];
+
+  list.innerHTML = "";
+  completedList.innerHTML = "";
+
+  affairs = storedAffairs;
+  completedAffairs = storedCompletedAffairs;
+
+  renderAffairs();
+  renderCompletedAffairs();
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem('affairs', JSON.stringify(affairs));
+  localStorage.setItem('completedAffairs', JSON.stringify(completedAffairs));
+}
+
 function getCurrentTime() {
   const now = new Date();
-  const hours = now.getHours().toString().padStart(2, "0"); 
+  const hours = now.getHours().toString().padStart(2, "0");
   const minutes = now.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 }
@@ -21,26 +41,41 @@ function getCurrentTime() {
 function setCounter() {
   const totalizer = affairs.length;
   counter.innerText = totalizer;
-  if (totalizer > 0) {
-    counter.classList.remove("disable");
-  } else {
-    counter.classList.add("disable");
-  }
-  if (totalizer > 9) {
-    counter.classList.add("affairs__counter--big");
-  } else {
-    counter.classList.remove("affairs__counter--big");
-  }
+  counter.classList.toggle("disable", totalizer === 0);
+  counter.classList.toggle("affairs__counter--big", totalizer > 9);
 }
 
-function addAffair(text) {
-  const currentTime = getCurrentTime(); 
+function renderAffairs() {
+  affairs.forEach(affair => {
+    addAffairToDOM(affair);
+  });
+}
+
+function renderCompletedAffairs() {
+  completedAffairs.forEach(affair => {
+    addCompletedAffairToDOM(affair);
+  });
+}
+
+function addAffair(text, time = getCurrentTime()) {
   const affair = {
     text: text,
-    time: currentTime 
+    time: time
   };
-  affairs.push(affair); 
+  affairs.push(affair);
+  addAffairToDOM(affair);
+  input.value = "";
+  setCounter();
+  saveToLocalStorage();
+}
 
+function addCompletedAffair(affair) {
+  completedAffairs.push(affair);
+  addCompletedAffairToDOM(affair);
+  saveToLocalStorage();
+}
+
+function addAffairToDOM(affair) {
   const item = document.createElement("li");
   item.classList.add("affairs__item");
   item.classList.add("item");
@@ -48,8 +83,8 @@ function addAffair(text) {
   const affairText = document.createElement("p");
   const affairTime = document.createElement("span");
 
-  affairText.innerText = `${affair.text}`; 
-  affairTime.innerText = `${affair.time}`; 
+  affairText.innerText = `${affair.text}`;
+  affairTime.innerText = `${affair.time}`;
   affairText.classList.add("item__text");
   affairTime.classList.add("item__time");
   item.appendChild(affairText);
@@ -61,7 +96,7 @@ function addAffair(text) {
 
   const deleteBtn = document.createElement("button");
   deleteBtn.innerText = "Delete";
-  deleteBtn.classList.add("button__delet");
+  deleteBtn.classList.add("item__button--delete","item__button");
 
   deleteBtn.addEventListener("click", () => {
     const index = affairs.indexOf(affair);
@@ -69,6 +104,7 @@ function addAffair(text) {
       affairs.splice(index, 1);
       item.remove();
       setCounter();
+      saveToLocalStorage();
     }
   });
 
@@ -77,13 +113,13 @@ function addAffair(text) {
   doneBtn.classList.add("button__completed");
 
   doneBtn.addEventListener("click", () => {
-    completedAffairs.push(affair);
+    addCompletedAffair(affair);
     const index = affairs.indexOf(affair);
     if (index !== -1) {
       affairs.splice(index, 1);
       item.remove();
       setCounter();
-      addCompletedAffair(affair);
+      saveToLocalStorage();
     }
   });
 
@@ -91,12 +127,11 @@ function addAffair(text) {
   container.appendChild(deleteBtn);
   item.appendChild(container);
   list.appendChild(item);
-
-  input.value = "";
   setCounter();
+  saveToLocalStorage();
 }
 
-function addCompletedAffair(affair) {
+function addCompletedAffairToDOM(affair) {
   const item = document.createElement("li");
   item.classList.add("affairs__item");
   item.classList.add("item");
@@ -106,8 +141,8 @@ function addCompletedAffair(affair) {
 
   const deleteBtn = document.createElement("button");
   deleteBtn.innerText = "Delete";
-  deleteBtn.classList.add("button__delet");
-  
+  deleteBtn.classList.add("item__button--delete","item__button");
+
   affairText.innerText = `${affair.text}`;
   affairTime.innerText = `${affair.time}`;
   affairText.classList.add("item__text");
@@ -117,17 +152,18 @@ function addCompletedAffair(affair) {
   item.appendChild(affairTime);
   item.appendChild(deleteBtn);
 
-
-
   deleteBtn.addEventListener("click", () => {
     const index = completedAffairs.indexOf(affair);
     if (index !== -1) {
       completedAffairs.splice(index, 1);
       item.remove();
       setCounter();
+      saveToLocalStorage();
     }
   });
   completedList.appendChild(item);
+  setCounter();
+  saveToLocalStorage();
 }
 
 addBtn.addEventListener("click", () => {
@@ -137,7 +173,7 @@ addBtn.addEventListener("click", () => {
   }
 });
 
-function handlecheckboxEvenChange() {
+function handleCheckboxEvenChange() {
   if (checkboxEven.checked) {
     list.classList.add("affairs__list--even");
   } else {
@@ -145,7 +181,7 @@ function handlecheckboxEvenChange() {
   }
 }
 
-function handlecheckboxOddChange() {
+function handleCheckboxOddChange() {
   if (checkboxOdd.checked) {
     list.classList.add("affairs__list--odd");
   } else {
@@ -155,32 +191,53 @@ function handlecheckboxOddChange() {
 
 deleteFirstElement.addEventListener("click", () => {
   if (affairs.length > 0) {
-    affairs.shift();
-    const firstItem = list.querySelector('.affairs__item'); 
+    const removedAffair = affairs.shift();
+    const firstItem = list.querySelector('.affairs__item');
     if (firstItem) {
-      firstItem.remove(); 
-      setCounter(); 
+      firstItem.remove();
+      setCounter();
+      saveToLocalStorage();
     }
   } else {
-    alert('No notes'); 
+    alert('No notes');
   }
 });
 
 deleteLastElement.addEventListener("click", () => {
   if (affairs.length > 0) {
-    affairs.pop(); 
-    const lastItem = list.querySelector('.affairs__item:last-child'); 
+    const removedAffair = affairs.pop();
+    const lastItem = list.querySelector('.affairs__item:last-child');
     if (lastItem) {
-      lastItem.remove(); 
-      setCounter(); 
+      lastItem.remove();
+      setCounter();
+      saveToLocalStorage();
     }
   } else {
-    alert('No notes'); 
+    alert('No notes');
   }
 });
 
-checkboxEven.addEventListener('change', handlecheckboxEvenChange);
-checkboxOdd.addEventListener('change', handlecheckboxOddChange);
+checkboxEven.addEventListener('change', handleCheckboxEvenChange);
+checkboxOdd.addEventListener('change', handleCheckboxOddChange);
 
-handlecheckboxEvenChange();
-handlecheckboxOddChange();
+clearAllBtn.addEventListener("click", () => {
+  const confirmation = confirm("Are you sure you want to clear all comments?");
+  if (confirmation) {
+    clearLocalStorage();
+  }
+});
+
+function clearLocalStorage() {
+  localStorage.removeItem('affairs');
+  localStorage.removeItem('completedAffairs');
+  affairs = [];
+  completedAffairs = [];
+  list.innerHTML = "";
+  completedList.innerHTML = "";
+  setCounter();
+}
+
+loadFromLocalStorage();
+setCounter();
+handleCheckboxEvenChange();
+handleCheckboxOddChange();

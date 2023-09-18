@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
-    <title>РК 2</title>
+    <title>RosAtom</title>
 </head>
 <body>
     <header class="header">
@@ -18,9 +18,12 @@
               <li>
                 <span class="affairs__counter disable" id="affairs__counter"></span>
                 <label>
-                  <input type="text" id="input" placeholder="Case"/>
+                  <input type="text" id="input" placeholder="write a task..."/>
                   <button id="add-btn">Add</button>
                 </label>
+              </li>
+              <li>
+                <button id="clear-all-btn">Delete all tasks</button>
               </li>
               <li>
                 <button class="affairs__btn affairs__btn--del-first">Remove the first element of a list</button>
@@ -38,8 +41,8 @@
               </li>
               
             </ul>
-            <ul class="affairs__listComplite" id="completed_list"></ul>
             <ul class="affairs__list" id="list"></ul>
+            <ul class="affairs__listComplite" id="completed_list"></ul>
           </div>
         </section>
     </main>
